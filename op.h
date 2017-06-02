@@ -92,6 +92,7 @@ typedef struct      s_asm
 	header_t		*header;
 	int 			cur_size;
 	int 			cur_codage_octal;
+    int             program_s;
 }                   t_asm;
 
 typedef struct s_op
@@ -111,6 +112,7 @@ void				to_byte_code(t_asm *head);
 void 				header_parse(t_asm *asemb, int fd);
 void                validate_it(t_asm *start, t_op *g_tab);
 t_op                *init_tab();
+int 				if_lable(int *ar);
 
 
 #endif //COREWAR_OP_H

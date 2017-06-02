@@ -35,7 +35,8 @@ void	parse_arguments(t_asm *head)
 	i = 0;
 	while (i < head->amount_of_args)
 	{
-		if (head.)
+	//	if (if_lable(head->l_flag))
+			//get_facking_lable(head);
 	}
 }
 
@@ -56,7 +57,7 @@ void	write_op_code(t_asm *head, int op_c, int fd)
 		val_next++;
 		write_codage_octal(head, fd);
 	}
-	parse_arguments();
+	parse_arguments(head);
 }
 
 void	get_commands(t_asm *head, int fd)

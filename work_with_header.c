@@ -4,7 +4,45 @@
 
 #include "op.h"
 
+int 	check_if_comand_is(char *command, int *cur_com_size, unsigned int *prog_s )
+{
+    int i;
+    int size[] = {4, 4, 0, 0, 0, 4, 4, 4, 2, 2, 2, 2, 4, 2, 2, 4};
+    int codage_octal[] = {0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1};
+    char *comm[] = {"live", "ld", "st", "add", "sub", "and", "or",
+                    "xor", "zjmp", "ldi", "sti", "fork", "lld",
+                    "lldi", "lfork", "aff"};
 
+    i = 0;
+    *prog_s += 2;
+    while (i < 16)
+    {
+        if (ft_strcmp(command, comm[i]) == 0)
+        {
+            if (cur_com_size)
+                *cur_com_size = size[i];
+            if (prog_s)
+                *prog_s += codage_octal[i] - 1;
+            return (i + 1);
+        }
+        i++;
+    }
+    return (MAX_INT);
+}
+
+int 			if_lable(int *ar)
+{
+    int i;
+
+    i = 0;
+    while (i < 3)
+    {
+        if (ar[i] > 0)
+            return (1);
+        i++;
+    }
+    return (0);
+}
 
 int 			get_index(int *ar)
 {
@@ -83,14 +121,18 @@ void			get_prog_size(t_asm *head)
 {
 	t_asm			*begin;
 	unsigned int 	res;
+    int             cur_com_size;
 
 	res = 0;
 	begin = head;
+    cur_com_size = 4;
 	while (begin)
 	{
-		res += begin->what_args[0] + begin->what_args[1] + begin->what_args[2];
-		if (begin->l_flag[0] == 1 || begin->l_flag[1] == 1 ||
-				begin->l_flag[2] == 1)
+        if (*(begin->lable) != '\0')
+            begin->program_s = head->header->prog_size;
+        check_if_comand_is(begin->command, &cur_com_size, &(begin->header->prog_size));
+		begin->header->prog_size += begin->what_args[0] + begin->what_args[1] + begin->what_args[2];
+		if (if_lable(head->l_flag))
 		{
 			res += find_lable(head, begin->args[get_index(begin->l_flag)]);
 		}

@@ -2,76 +2,77 @@
 // Created by Oleksiy Kres on 5/26/17.
 //
 
-#include "corewar.h"
+#include "op.h"
 
-void	get_lable(t_asm *begin, t_asm *head, int fd);
+void	write_codage_octal(t_asm *head, int fd)
+{
 
-int 	find_lable_in_args(int *ar)
+}
+
+int 	check_if_comand(char *command)
+{
+	int i;
+	int size[] = {4, 4, 0, 0, 0, 4, 4, 4, 2, 2, 2, 2, 4, 2, 2, 4};
+	int codage_octal[] = {0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1};
+	char *comm[] = {"live", "ld", "st", "add", "sub", "and", "or",
+				  "xor", "zjmp", "ldi", "sti", "fork", "lld",
+				  "lldi", "lfork", "aff"};
+
+	i = 0;
+	while (i < 16)
+	{
+		if (ft_strcmp(command, comm[i]) == 0)
+			return (i + 1);
+		i++;
+	}
+	return (MAX_INT);
+}
+
+void	parse_arguments(t_asm *head)
 {
 	int i;
 
 	i = 0;
-	while (i < 3)
+	while (i < head->amount_of_args)
 	{
-		if (ar[i] == 1)
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
-void	find_lable(t_asm *begin, char **args, int fd)
-{
-	t_asm			*save;
-	int 			i;
-	int 			j;
-	unsigned char	*s;
-
-	i = 0;
-	j = 0;
-	save = begin;
-	while (save)
-	{
-		while (args[i])
-		{
-			if (ft_strcmp(save->lable, args[i]) == 0)
-			{
-				s = (unsigned char *)save->command;
-				write(fd, s, ft_strlen(save->command));
-				while (save->args[j])
-				{
-					if (save->l_flag[j] > 0)
-						get_lable(begin, save, fd);
-					else
-						write(fd, save->args[j], ft_strlen(save->args[j]));
-					j++;
-				}
-			}
-			i++;
-		}
-		save = save->next;
+		if (head.)
 	}
 }
 
-void	get_lable(t_asm *begin, t_asm *head, int fd)
+void	write_op_code(t_asm *head, int op_c, int fd)
 {
-	int 			i;
-	unsigned char	*s;
+	int	size[] = {4, 4, 0, 0, 0, 4, 4, 4, 2, 2, 2, 2, 4, 2, 2, 4};
+	int codage_octal[] = {0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1};
+	int i;
+	static int val_cur;
+	int val_next;
 
-	i = 0;
-	if (find_lable_in_args(head->l_flag))
-		find_lable(begin, head->args, fd);
-	else if (head->command)
+	val_next = 1;
+	head->cur_size = size[op_c - 1];
+	head->cur_codage_octal = codage_octal[op_c - 1];
+	write(fd, &op_c, 1);
+	if (head->cur_codage_octal)
 	{
-		s = (unsigned char *)head->command;
-		write(fd, s, ft_strlen(head->command));
-		while (head->args[i])
-		{
-			write(fd, head->args[i], ft_strlen(head->args[i]));
-			i++;
-		}
+		val_next++;
+		write_codage_octal(head, fd);
 	}
+	parse_arguments();
+}
 
+void	get_commands(t_asm *head, int fd)
+{
+	t_asm	*begin;
+	int 	op_c;
+
+	begin = head;
+	while (begin)
+	{
+		if ((op_c = check_if_comand(begin->command)) != MAX_INT)
+			write_op_code(head, op_c, fd);
+		//else if(check_if_lable)
+		//	find_curr_lable();
+		begin = begin->next;
+	}
 }
 
 void	to_byte_code(t_asm *head)
@@ -81,45 +82,10 @@ void	to_byte_code(t_asm *head)
 	int		fd;
 
 	file_name = ft_strjoin(head->file_name, ".cor");
-	fd = open(file_name, O_WRONLY | O_CREAT | O_APPEND);
+	fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	begin = head;
-	while (head)
-	{
-		get_lable(begin, head, fd);
-		head = head->next;
-	}
-}
-
-int main()
-{
-	t_asm *assem;
-	t_asm *assem1;
-	t_asm *assem2;
-	t_asm *assem3;
-	t_asm *assem4;
-
-	assem = malloc(sizeof(assem));
-	assem1 = malloc(sizeof(assem));
-	assem2 = malloc(sizeof(assem));
-	assem3 = malloc(sizeof(assem));
-	assem4 = malloc(sizeof(assem));
-
-	assem->file_name = ft_strdup("NAME");
-	assem->command = ft_strdup("fork");
-	assem->args[0] = ft_strdup("coregeni");
-	assem->l_flag[0] = 1;
-	assem->next = assem1;
-	assem1->command = ft_strdup("st");
-	assem1->args[0] = ft_strdup("r1");
-	assem1->args[1] = ft_strdup("6");
-	assem1->next = assem2;
-	assem2->command = ft_strdup("live");
-	assem2->args[0] = ft_strdup("42");
-	assem2->next = assem3;
-	assem3->command = ft_strdup("fork");
-	assem3->args[0] = "torpgeni";
-	assem3->l_flag[0] = 1;
-	assem->next = assem4;
-	assem4->lable = ft_strdup("coregeni");
-	to_byte_code(assem);
+	head->header = (header_t *)malloc(sizeof(header_t));
+	header_parse(head, fd);
+	write(fd, &(*head->header), sizeof(header_t));
+	get_commands(head, fd);
 }

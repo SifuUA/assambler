@@ -57,7 +57,8 @@ typedef char	t_arg_type;
 # define PROG_NAME_LENGTH		(128)
 # define COMMENT_LENGTH			(2048)
 # define COREWAR_EXEC_MAGIC		0xea83f3
-#define MAX_INT                 2147483647
+# define MAX_INT                 2147483647
+# define MAX_SHORT_INT 			65535
 
 typedef struct		header_s
 {
@@ -105,6 +106,11 @@ typedef struct s_op
     int oct; //codage octal (idk what is this)
 } t_op;
 
+typedef enum e_t
+{
+	REG,
+	IND
+}			t_t;
 t_asm *new_asm();
 void				get_shit(t_asm *start, char *line);
 void				ft_exit(int flag);
@@ -112,8 +118,9 @@ void				to_byte_code(t_asm *head);
 void 				header_parse(t_asm *asemb, int fd);
 void                validate_it(t_asm *start, t_op *g_tab);
 t_op                *init_tab();
-int 				if_lable(int *ar);
-void				write_op_code(t_asm *head, int op_c, int fd);
+int 				if_lable(int *ar);// check if in arguments lable
+void				write_op_code(t_asm *head, t_asm *begin, int op_c, int fd); // write commands in file
+unsigned int		do_big_endian(unsigned int magic, int size); // chang place of bits
 
 
 #endif //COREWAR_OP_H

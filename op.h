@@ -113,6 +113,7 @@ void 				header_parse(t_asm *asemb, int fd);
 void                validate_it(t_asm *start, t_op *g_tab);
 t_op                *init_tab();
 int 				if_lable(int *ar);
+void				write_op_code(t_asm *head, int op_c, int fd);
 
 
 #endif //COREWAR_OP_H

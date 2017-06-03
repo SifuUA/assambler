@@ -4,11 +4,6 @@
 
 #include "op.h"
 
-void	write_codage_octal(t_asm *head, int fd)
-{
-
-}
-
 int 	check_if_comand(char *command)
 {
 	int i;
@@ -28,38 +23,6 @@ int 	check_if_comand(char *command)
 	return (MAX_INT);
 }
 
-void	parse_arguments(t_asm *head)
-{
-	int i;
-
-	i = 0;
-	while (i < head->amount_of_args)
-	{
-	//	if (if_lable(head->l_flag))
-			//get_facking_lable(head);
-	}
-}
-
-void	write_op_code(t_asm *head, int op_c, int fd)
-{
-	int	size[] = {4, 4, 0, 0, 0, 4, 4, 4, 2, 2, 2, 2, 4, 2, 2, 4};
-	int codage_octal[] = {0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1};
-	int i;
-	static int val_cur;
-	int val_next;
-
-	val_next = 1;
-	head->cur_size = size[op_c - 1];
-	head->cur_codage_octal = codage_octal[op_c - 1];
-	write(fd, &op_c, 1);
-	if (head->cur_codage_octal)
-	{
-		val_next++;
-		write_codage_octal(head, fd);
-	}
-	parse_arguments(head);
-}
-
 void	get_commands(t_asm *head, int fd)
 {
 	t_asm	*begin;
@@ -70,8 +33,7 @@ void	get_commands(t_asm *head, int fd)
 	{
 		if ((op_c = check_if_comand(begin->command)) != MAX_INT)
 			write_op_code(head, op_c, fd);
-		//else if(check_if_lable)
-		//	find_curr_lable();
+
 		begin = begin->next;
 	}
 }

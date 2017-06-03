@@ -3,6 +3,9 @@
 //
 #include "op.h"
 
+int	size[] = {4, 4, 0, 0, 0, 4, 4, 4, 2, 2, 2, 2, 4, 2, 2, 4};
+int codage_octal[] = {0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1};
+
 int 			if_lable(int *ar)
 {
 	int i;
@@ -55,3 +58,39 @@ int 			find_lable(t_asm *begin, char *lable)
 	return (res);
 }
 
+void	write_codage_octal(t_asm *head, int fd)
+{
+
+}
+
+
+void	parse_arguments(t_asm *head)
+{
+	int i;
+
+	i = 0;
+	while (i < head->amount_of_args)
+	{
+		//	if (if_lable(head->l_flag))
+		//get_facking_lable(head);
+	}
+}
+
+void	write_op_code(t_asm *head, int op_c, int fd)
+{
+
+	int i;
+	static int val_cur;
+	int val_next;
+
+	val_next = 1;
+	head->cur_size = size[op_c - 1];
+	head->cur_codage_octal = codage_octal[op_c - 1];
+	write(fd, &op_c, 1);
+	if (head->cur_codage_octal)
+	{
+		val_next++;
+		write_codage_octal(head, fd);
+	}
+	parse_arguments(head);
+}

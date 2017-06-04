@@ -87,6 +87,7 @@ void			get_prog_size(t_asm *head) {
 
 	begin = head;
 	cur_com_size = 4;
+	head->header->prog_size = 0;
 	i = 0;
 	while (begin)
 	{
@@ -98,20 +99,8 @@ void			get_prog_size(t_asm *head) {
 			modify_size(head, begin, cur_com_size);
 		}
 		begin = begin->next;
-		if (begin->next == NULL)
+		if (begin && begin->next == NULL)
 			break ;
 	}
 	head->header->prog_size = do_big_endian(head->header->prog_size, 4);
-}
-void			header_parse(t_asm *head, int fd)
-{
-	t_asm *begin;
-
-	begin = head;
-	head->header->magic = do_big_endian(COREWAR_EXEC_MAGIC, 4);
-	ft_bzero(head->header->prog_name, PROG_NAME_LENGTH + 1);
-	ft_bzero(head->header->comment, COMMENT_LENGTH + 1);
-	fill_name_and_comment(head);
-	get_prog_size(head);
-
 }

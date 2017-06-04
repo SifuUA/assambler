@@ -36,7 +36,7 @@ void	get_commands(t_asm *head, int fd)
 		if ((op_c = check_if_comand(begin->command)) != MAX_INT)
 			write_op_code(head, begin, op_c, fd);
 		begin = begin->next;
-		if (begin->next == NULL)
+		if (begin && begin->next == NULL)
 			break ;
 	}
 }
@@ -51,7 +51,11 @@ void	to_byte_code(t_asm *head)
 	fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	begin = head;
 	head->header = (header_t *)malloc(sizeof(header_t));
-	header_parse(head, fd);
+	head->header->magic = do_big_endian(COREWAR_EXEC_MAGIC, 4);
+	ft_bzero(head->header->prog_name, PROG_NAME_LENGTH + 1);
+	ft_bzero(head->header->comment, COMMENT_LENGTH + 1);
+	fill_name_and_comment(head);
+	get_prog_size(head);
 	write(fd, &(*head->header), sizeof(header_t));
 	get_commands(head, fd);
 }

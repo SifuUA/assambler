@@ -113,7 +113,7 @@ int 	write_dir(int fd, int val_cur, t_asm *head, int index, t_asm *begin)
 
 	if (begin->l_flag[index] == 0)
 	{
-		while (*begin->args[index] < 48 || *begin->args[index] > 57)
+		while ((*begin->args[index] < 48 || *begin->args[index] > 57) && *begin->args[index] != 45)
 			begin->args[index]++;
 		tmp = ft_atoi(begin->args[index]);
 	}
@@ -135,11 +135,8 @@ void	write_op_code(t_asm *head, t_asm *begin, int op_c, int fd)
 	head->cur_size = size[op_c - 1];
 	head->cur_codage_octal = codage_octal[op_c - 1];
 	write(fd, &op_c, 1);
-	if (head->cur_codage_octal)
-	{
-		val_tmp++;
+	if (head->cur_codage_octal && ++val_tmp)
 		write_codage_octal(begin, fd);
-	}
 	while (i < begin->amount_of_args)
 	{
 		if (begin->what_args[i] == T_REG)

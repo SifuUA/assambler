@@ -14,6 +14,8 @@ int 	check_if_comand(char *command)
 				  "lldi", "lfork", "aff"};
 
 	i = 0;
+	if (!command)
+		return (MAX_INT);
 	while (i < 16)
 	{
 		if (ft_strcmp(command, comm[i]) == 0)
@@ -34,6 +36,8 @@ void	get_commands(t_asm *head, int fd)
 		if ((op_c = check_if_comand(begin->command)) != MAX_INT)
 			write_op_code(head, begin, op_c, fd);
 		begin = begin->next;
+		if (begin->next == NULL)
+			break ;
 	}
 }
 

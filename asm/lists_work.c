@@ -77,10 +77,9 @@ void    check_if_label_ok(char *line, int len)
         if (*t != DIRECT_CHAR)
             ft_exit(7);
     }
-    //free(p);
 }
 
-void    get_label(char *line, t_asm *start)
+void    get_label(char **line, t_asm *start)
 {
     int len;
     char dupline[1000];
@@ -88,13 +87,13 @@ void    get_label(char *line, t_asm *start)
     len = 0;
     if (start->label == NULL)
     {
-        ft_strcpy(dupline, line);
+        ft_strcpy(dupline, *line);
         if (ft_strchr(dupline, LABEL_CHAR) != NULL)
         {
             while (dupline[len] != LABEL_CHAR && dupline[len] != '\0')
                 len++;
         }
-        check_if_label_ok(line, len);
+        check_if_label_ok(*line, len);
         if ((dupline[len] == '\0' || dupline[len - 1] == DIRECT_CHAR) && start->only_label != 1)//check if label is in line
             start->label = start->label;
         else if (start->only_label != 1 && len != 0)
@@ -103,6 +102,7 @@ void    get_label(char *line, t_asm *start)
             start->label = ft_strnew(0);
             ft_strcpy(start->label, dupline);
             check_label_syntax(start->label);
+            *line = *line + len + 1;
         }
     }
 }
@@ -150,7 +150,7 @@ char *good_strtrim(char *str)
     j = len;
     while (str[i] == ' ' || str[i] == '\t')
         i++;
-    while ((str[j] == ' ' || str[j] == '\t'))
+    while (str[j] == ' ' || str[j] == '\t' || str[j] == COMMENT_CHAR || str[j] == ';')
         j--;
     len = j - i;
     res = ft_strsub(str, i, len + 1);
@@ -175,11 +175,15 @@ char *clean_arg(char *line)
 int     is_num(char *str)
 {
     int i;
+    int minus;
 
     i = 0;
+    minus = 0;
     while (str[i])
     {
-        if (ft_isdigit(str[i]) != 1)
+        if (str[i] == '-')
+            minus++;
+        if (ft_isdigit(str[i]) != 1 && minus > 1)
             return(0);
         i++;
     }
@@ -254,6 +258,19 @@ void    if_more_args(t_asm *start)
     }
 }
 
+void    if_comment_at_end(char **line)
+{
+    char *t;
+
+    if ((t = ft_strchr(*line, COMMENT_CHAR)) || (t = ft_strchr(*line, ';')))
+    {
+        *t = '\0';
+        t = *line;
+        *line = ft_strdup(t);
+        free(t);
+    }
+}
+
 void    get_args_now(t_asm *start, t_op *tab, char *dupline, size_t i)
 {
     size_t j;
@@ -268,6 +285,7 @@ void    get_args_now(t_asm *start, t_op *tab, char *dupline, size_t i)
             i++;
         args = ft_strsub(dupline, (unsigned int)i, j);
         start->args = ft_strsplit(args, SEPARATOR_CHAR);
+        //if_comment_at_endl(start);
         ft_strdel(&args);
         if_more_args(start);
     }
@@ -306,16 +324,20 @@ int is_label(char *line) //check if label is in line
 void    get_shit(t_asm *start, char *line)
 {
     t_op *g_tab;
+    char *dupline;
+
     if (start->only_label == 1 && is_label(line) == 1) //if list with only label
     {
         start->next = new_asm();
         start->only_label = 0;
         start = start->next;
     }
+    if_comment_at_end(&line);
     line = good_strtrim(line);
+    dupline = line;
     g_tab = init_tab();
-    get_label(line, start);
-    get_command(line, g_tab, start);
-    get_args(line, start, g_tab);
+    get_label(&dupline, start);
+    get_command(dupline, g_tab, start);
+    get_args(dupline, start, g_tab);
     free(line);
 }

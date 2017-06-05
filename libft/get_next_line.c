@@ -3,117 +3,90 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: okres <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/13 13:20:48 by okres             #+#    #+#             */
-/*   Updated: 2017/01/13 13:39:11 by okres            ###   ########.fr       */
+/*   Created: 2017/01/19 16:25:27 by arepnovs          #+#    #+#             */
+/*   Updated: 2017/03/01 18:55:44 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "libft.h"
 
-t_gnl		*create(char *buff, int fd)
+static t_gnl	*new_gnl(int fd)
 {
-	t_gnl *ptr;
+	t_gnl	*new;
 
-	ptr = (t_gnl *)malloc(sizeof(t_gnl));
-	if (!ptr)
+	new = (t_gnl*)malloc(sizeof(t_gnl));
+	if (!new)
 		return (NULL);
-	if (!buff)
-	{
-		ptr->buff = NULL;
-		fd = 0;
-	}
-	else
-	{
-		ptr->buff = buff;
-		ptr->fd = fd;
-		ptr->next = NULL;
-	}
-	return (ptr);
+	new->str = ft_strnew(0);
+	new->fd = fd;
+	new->next = NULL;
+	return (new);
 }
 
-void		read_in_buffer(const int fd, char **buffer, int *read_return)
+static char		*ft_read(int fd, char *tail, int *ret)
 {
-	char	tmp[BUFF_SIZE + 1];
-	char	*p;
+	char	buf[BUFF_SIZE + 1];
+	char	*buf2;
 
-	ft_bzero(tmp, BUFF_SIZE + 1);
-	*read_return = read(fd, tmp, BUFF_SIZE);
-	if (*read_return == 0)
-		return ;
-	tmp[*read_return] = '\0';
-	p = ft_strjoin(*buffer, tmp);
-	ft_strdel(buffer);
-	*buffer = p;
+	ft_bzero(buf, BUFF_SIZE + 1);
+	*ret = read(fd, buf, BUFF_SIZE);
+	buf[*ret] = '\0';
+	buf2 = ft_strjoin(tail, buf);
+	ft_strdel(&tail);
+	return (buf2);
 }
 
-void		chek_and_add_node(t_gnl **begin, t_gnl **p, t_gnl **p1, int fd)
+static int		get_line(char **tail, char **line, int fd)
 {
-	int		flag;
+	int		ret;
+	char	*gline;
 
-	flag = 0;
-	if (*begin == NULL)
+	ret = 1;
+	while (ret > 0)
 	{
-		*begin = create(ft_strnew(0), fd);
-		*p = *begin;
-	}
-	else
-	{
-		while (*p)
+		*tail = ft_read(fd, *tail, &ret);
+		if ((gline = ft_strchr(*tail, '\n')) != NULL)
 		{
-			if ((*p1 = *p) && (*p)->fd == fd)
-			{
-				flag = 1;
-				break ;
-			}
-			*p = (*p1)->next;
+			*gline = '\0';
+			*line = ft_strdup(*tail);
+			ft_memmove(*tail, gline + 1, ft_strlen(gline + 1) + 1);
+			return (1);
 		}
-		if (flag == 0)
+		else if (ft_strlen(*tail) && ret == 0)
 		{
-			(*p1)->next = create(ft_strnew(0), fd);
-			*p = (*p1)->next;
+			*line = ft_strdup(*tail);
+			ft_bzero(*tail, ft_strlen(*tail));
+			return (1);
 		}
+		else if (!ft_strlen(*tail) && ret == 0)
+			*line = ft_strnew(0);
 	}
+	return (ret);
 }
 
-int			end(int *read_return, char **buff, char **line)
+int				get_next_line(const int fd, char **line)
 {
-	if (*read_return == 0 && *buff && **buff != '\0')
-	{
-		*line = ft_strdup(*buff);
-		ft_strdel(&(*buff));
-		return (1);
-	}
-	else if (*line)
-		*line = ft_strnew(0);
-	return (*read_return);
-}
+	static t_gnl	*s;
+	t_gnl			*tail;
 
-int			get_next_line(const int fd, char **line)
-{
-	static		t_gnl	*begin;
-	t_gnl				*p;
-	t_gnl				*p1;
-	char				*ptr;
-	int					read_return;
-
-	if (fd < 0 || BUFF_SIZE > 65534 || !line)
+	if (fd < 0 || BUFF_SIZE <= 0 || BUFF_SIZE > 65534 || !line)
 		return (-1);
-	p = begin;
-	chek_and_add_node(&begin, &p, &p1, fd);
-	read_return = 1;
-	while (read_return > 0)
+	if (!s)
+		s = new_gnl(fd);
+	tail = s;
+	while (tail)
 	{
-		read_in_buffer(fd, &(p->buff), &read_return);
-		if (p->buff && ((ptr = ft_strchr(p->buff, '\n')) != NULL))
+		if (tail->fd == fd)
+			break ;
+		if (tail->next == NULL && tail->fd != fd)
 		{
-			*ptr = '\0';
-			*line = ft_strdup(p->buff);
-			ft_memmove(p->buff, ptr + 1, ft_strlen(ptr + 1) + 1);
-			if (ft_strlen(*line) > 0 || **line == '\0')
-				return (1);
+			tail->next = new_gnl(fd);
+			tail = tail->next;
+			break ;
 		}
+		tail = tail->next;
 	}
-	return (end(&read_return, &(p->buff), &(*line)));
+	return (get_line(&tail->str, line, fd));
 }

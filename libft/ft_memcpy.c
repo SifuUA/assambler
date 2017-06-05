@@ -3,36 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: okres <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/07 16:39:15 by okres             #+#    #+#             */
-/*   Updated: 2016/12/07 18:18:52 by okres            ###   ########.fr       */
+/*   Created: 2016/12/05 15:08:36 by arepnovs          #+#    #+#             */
+/*   Updated: 2016/12/05 15:08:40 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	*ft_memcpy(void *restrict dst, const void *restrict src,
-		size_t n)
+void				*ft_memcpy(void *dest, const void *src, size_t n)
 {
-	const char	*s_src;
-	char		*s_dst;
-	size_t		i;
+	size_t			i;
+	unsigned char	*str1;
+	unsigned char	*str2;
 
-	s_src = src;
-	s_dst = dst;
-	if (src < dst)
+	str1 = (unsigned char *)dest;
+	str2 = (unsigned char *)src;
+	i = 0;
+	while (i < n)
 	{
-		i = n;
-		while (--i < n)
-			s_dst[i] = s_src[i];
+		str1[i] = str2[i];
+		i++;
 	}
-	else
-	{
-		i = 0;
-		--i;
-		while (++i < n)
-			s_dst[i] = s_src[i];
-	}
-	return (dst);
+	return (dest);
 }

@@ -3,78 +3,97 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strsplit.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: okres <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/07 18:01:34 by okres             #+#    #+#             */
-/*   Updated: 2017/05/15 16:22:39 by okres            ###   ########.fr       */
+/*   Created: 2016/12/06 14:31:08 by arepnovs          #+#    #+#             */
+/*   Updated: 2016/12/10 14:35:46 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static const char	*split_start(const char *s, char c)
+static int	count_words(const char *s, char c)
 {
-	const char	*tmp;
-
-	if (s)
-	{
-		tmp = s;
-		while (*tmp && *tmp == c)
-			tmp++;
-		return (tmp);
-	}
-	else
-		return (NULL);
-}
-
-static int			count_of_words(char const *s, char c)
-{
-	int	words;
+	int			words;
+	size_t		i;
 
 	words = 0;
-	while (*s)
+	i = 0;
+	while (s[i])
 	{
-		while (*s && *s != c)
-			s++;
-		words++;
-		s = split_start(s, c);
+		if (s[i] == c && s[i + 1] != c && s[i + 1] != '\0')
+			words++;
+		i++;
 	}
+	if (s[0] != c)
+		words++;
+	if (s[0] == '\0')
+		words = 0;
 	return (words);
 }
 
-static char			**create_arr(char const *s, char c)
+static size_t	word_start(const char *s, char c, size_t start)
 {
-	char		**arr;
-	char		**buf;
-	const char	*ptr;
-	int			i;
+	size_t		i;
 
-	arr = ft_memalloc(sizeof(arr) * (count_of_words(s, c) + 1));
-	if (!arr)
-		return (NULL);
-	buf = arr;
-	while (*s)
-	{
-		ptr = s;
-		i = 0;
-		while (*s != c && *s)
-		{
-			i++;
-			s++;
-		}
-		*(buf++) = ft_strsub(ptr, 0, i);
-		if (*s)
-			s = split_start(s, c);
-	}
-	*(buf) = 0;
-	return (arr);
+	i = start;
+	while (s[i] == c)
+		i++;
+	return (i);
 }
 
-char				**ft_strsplit(char const *s, char c)
+static size_t	length(const char *s, size_t start, char c)
 {
-	if (s && *s && *s != '\0')
-		s = split_start(s, c);
-	else
-		return (NULL);
-	return (create_arr(s, c));
+	size_t		len;
+
+	len = 0;
+	while (s[start] != c && s[start] != '\0')
+	{
+		len++;
+		start++;
+	}
+	return (len);
+}
+
+static void	fill_tabs(char **tab, const char *s, char c, int words)
+{
+	size_t		start;
+	int			i;
+	size_t		j;
+
+	start = 0;
+	i = 0;
+	j = 0;
+	while (s[start] != '\0')
+	{
+		start = word_start(s, c, start);
+		if (i < words)
+		{
+			tab[i] = (char *)malloc((length(s, start, c) + 1) * sizeof(char));
+			while (s[start] != '\0' && s[start] != c && i < words)
+				tab[i][j++] = s[start++];
+			tab[i][j] = '\0';
+			i++;
+			j = 0;
+		}
+	}
+	tab[i] = NULL;
+}
+
+char		**ft_strsplit(const char *s, char c)
+{
+	char	**tab;
+	int		words;
+
+	if (s)
+	{
+		words = count_words(s, c);
+		if (words == 0 && words == -1)
+			return (NULL);
+		if (!(tab = (char **)malloc((words + 1) * sizeof(char *))))
+			return (NULL);
+		fill_tabs(&(*tab), s, c, words);
+		return (tab);
+	}
+	return (NULL);
 }

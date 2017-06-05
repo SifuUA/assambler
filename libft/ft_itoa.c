@@ -3,58 +3,65 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: okres <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/05 17:10:42 by okres             #+#    #+#             */
-/*   Updated: 2016/12/07 18:04:28 by okres            ###   ########.fr       */
+/*   Created: 2016/12/05 17:57:04 by arepnovs          #+#    #+#             */
+/*   Updated: 2016/12/10 14:16:29 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	count_of_words(int n)
+static int	int_size(int n)
 {
-	int	i;
+	size_t	size;
+	int		num;
 
-	i = 1;
-	if (n < 0)
-	{
-		i++;
-		n = -n;
-	}
-	while ((n = n / 10) != 0)
-		i++;
-	return (i);
-}
-
-static void	write_in_ar(int n, char *ptr, int i)
-{
-	if (n < 0)
-	{
-		ptr[0] = '-';
-		n = -n;
-	}
-	ptr[i--] = '\0';
+	num = n;
+	size = 1;
 	while (n != 0)
 	{
-		ptr[i--] = (n % 10 + '0');
+		n = n / 10;
+		size++;
+	}
+	if (num <= 0)
+		size++;
+	return (size);
+}
+
+static char	*transform(char *res, int n, int size)
+{
+	while (size > 0)
+	{
+		size--;
+		res[size] = n % 10 + '0';
 		n = n / 10;
 	}
+	return (res);
 }
 
 char		*ft_itoa(int n)
 {
-	char	*ptr;
-	int		i;
+	int		minus;
+	size_t	size;
+	char	*res;
 
+	minus = 0;
+	size = 1;
 	if (n == -2147483648)
 		return (ft_strdup("-2147483648"));
-	if (n == 0)
-		return (ft_strdup("0"));
-	i = count_of_words(n);
-	ptr = (char*)malloc(sizeof(char) * i + 1);
-	if (!ptr)
-		return (0);
-	write_in_ar(n, ptr, i);
-	return (ptr);
+	size = int_size(n);
+	if (n <= 0)
+	{
+		minus = 1;
+		n = n * -1;
+	}
+	res = (char *)malloc((size) * sizeof(char));
+	if (!res)
+		return (NULL);
+	res[--size] = '\0';
+	res = transform(res, n, size);
+	if (minus == 1 && res[1] > '0' && res[1] <= '9')
+		res[0] = '-';
+	return (res);
 }

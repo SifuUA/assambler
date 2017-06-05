@@ -1,30 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_list_size.c                                     :+:      :+:    :+:   */
+/*   ft_strsplit.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: okres <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/10 14:17:12 by okres             #+#    #+#             */
-/*   Updated: 2017/03/15 20:49:11 by okres            ###   ########.fr       */
+/*   Created: 2016/12/06 14:31:08 by arepnovs          #+#    #+#             */
+/*   Updated: 2016/12/10 11:27:24 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_list_size(t_list *begin_list)
+int		ft_count_words(const char *s, char c)
 {
-	size_t	index;
-	t_list	*node;
+	size_t	words;
+	size_t	i;
 
-	if (begin_list == 0)
-		return (0);
-	index = 0;
-	node = begin_list;
-	while (node->next != 0)
+	words = 0;
+	i = 0;
+	while (s[i])
 	{
-		node = node->next;
-		index++;
+		if (s[i] == c && s[i + 1] != c && s[i + 1] != '\0')
+			words++;
+		i++;
 	}
-	return (index);
+	if (s[0] != c)
+		words++;
+	if (s[0] == '\0')
+		words = 0;
+	return (words);
 }

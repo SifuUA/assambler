@@ -3,40 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: okres <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/08 18:26:40 by okres             #+#    #+#             */
-/*   Updated: 2016/12/08 18:26:48 by okres            ###   ########.fr       */
+/*   Created: 2016/12/05 13:56:07 by arepnovs          #+#    #+#             */
+/*   Updated: 2016/12/09 15:01:07 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strnstr(const char *big, const char *little, size_t len)
+char		*ft_strnstr(const char *str, const char *to_find, size_t len)
 {
-	char	*tmp_b;
-	char	*tmp_l;
-	int		buf_len;
-	int		i;
+	size_t	i;
+	size_t	j;
+	size_t	c;
 
-	i = len;
-	if (*little == 0)
-		return ((char*)big);
-	while (*big && i >= 0)
+	i = 0;
+	c = 0;
+	if (to_find[0] == '\0')
+		return ((char*)(str));
+	while (str[i] != '\0' && i < len)
 	{
-		tmp_b = (char*)big;
-		tmp_l = (char*)little;
-		buf_len = i;
-		while (*big && *little && *big == *tmp_l && i > 0)
+		j = i;
+		while (str[j] == to_find[c] && j < len)
 		{
-			big++;
-			tmp_l++;
-			i--;
+			j++;
+			c++;
+			if (to_find[c] == '\0')
+				return ((char*)(&str[i]));
 		}
-		if (*tmp_l == 0)
-			return (tmp_b);
-		i = buf_len - 1;
-		big = tmp_b + 1;
+		i++;
+		c = 0;
 	}
-	return (0);
+	return (NULL);
 }

@@ -3,33 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlcat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: okres <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/08 18:18:45 by okres             #+#    #+#             */
-/*   Updated: 2016/12/08 18:18:52 by okres            ###   ########.fr       */
+/*   Created: 2016/12/05 18:41:18 by arepnovs          #+#    #+#             */
+/*   Updated: 2016/12/05 18:41:24 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-size_t	ft_strlcat(char *restrict dst, const char *restrict src, size_t size)
+size_t		ft_strlcat(char *dest, const char *src, size_t size)
 {
 	size_t	i;
-	size_t	lend;
-	size_t	lens;
+	size_t	j;
+	size_t	end;
 
-	lend = ft_strlen(dst);
-	lens = ft_strlen(src);
-	if (size == 0)
-		return (lens);
-	if ((size - 1) < lend)
-		return (size + lens);
 	i = 0;
-	while (dst[i])
+	j = 0;
+	while (dest[i] && i < size)
 		i++;
-	size = size + lend;
-	while (*src && i < (size - lend - 1))
-		dst[i++] = *(src++);
-	dst[i] = 0;
-	return (lend + lens);
+	while (src[j])
+		j++;
+	end = i;
+	while (src[i - end] && i < size - 1)
+	{
+		dest[i] = src[i - end];
+		i++;
+	}
+	if (end < size)
+		dest[i] = '\0';
+	return (end + j);
 }

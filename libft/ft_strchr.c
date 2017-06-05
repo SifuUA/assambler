@@ -3,24 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: okres <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/05/18 12:25:31 by okres             #+#    #+#             */
-/*   Updated: 2017/05/18 12:25:32 by okres            ###   ########.fr       */
+/*   Created: 2016/12/05 18:40:38 by arepnovs          #+#    #+#             */
+/*   Updated: 2016/12/05 18:40:41 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strchr(const char *s, int c)
+char		*ft_strchr(const char *str, int c)
 {
-	if (ft_isascii(c) == 0)
-		return (NULL);
-	while (*s != c)
+	size_t i;
+	size_t j;
+
+	i = 0;
+	j = 0;
+	while (str[i])
 	{
-		if (*s == '\0')
-			return (NULL);
-		s++;
+		if (str[i] == c)
+			return ((char *)str + i);
+		i++;
 	}
-	return ((char*)s);
+	if (str[i] == '\0' && c == '\0')
+		return ((char *)&str[i]);
+	return (NULL);
 }

@@ -3,50 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: okres <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/08 15:22:48 by okres             #+#    #+#             */
-/*   Updated: 2016/12/09 14:08:05 by okres            ###   ########.fr       */
+/*   Created: 2016/12/05 18:39:51 by arepnovs          #+#    #+#             */
+/*   Updated: 2016/12/09 14:55:51 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-
-static int	skip(const char *str)
+int		ft_atoi(char *str)
 {
-	int i;
+	int	minus;
+	int	res;
 
-	i = 0;
-	while (str[i] == ' ' || str[i] == '\t' || str[i] == '\v' || str[i] == '\r'
-			|| str[i] == '\f' || str[i] == '\n')
-		i++;
-	return (i);
-}
-
-int			ft_atoi(const char *str)
-{
-	int					i;
-	int					minus;
-	unsigned long long	res;
-
+	minus = 0;
 	res = 0;
-	minus = 1;
-	i = skip(str);
-	if (str[i] == '-')
+	while (*str == ' ' || *str == '\t' || *str == '\v' || *str == '\r'
+			|| *str == '\f' || *str == '\n')
+		str++;
+	if (*str == '+')
+		str++;
+	else if (*str == '-')
 	{
-		minus = -1;
-		i++;
+		minus = '1';
+		str++;
 	}
-	else if (str[i] == '+')
-		i++;
-	while (str[i] >= '0' && str[i] <= '9')
+	while ((*str <= '9') && (*str >= '0'))
 	{
-		res = res * 10 + str[i] - '0';
-		i++;
-		if (res > 9223372036854775807 && minus == -1)
-			return (0);
-		if (res > 9223372036854775807)
-			return (-1);
+		res = (res * 10) + (*str - '0');
+		str++;
 	}
-	return ((int)(res * minus));
+	if (minus == '1')
+		res = -res;
+	return (res);
 }

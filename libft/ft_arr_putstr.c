@@ -6,7 +6,7 @@
 /*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/09 15:17:52 by arepnovs          #+#    #+#             */
-/*   Updated: 2016/12/09 17:48:11 by arepnovs         ###   ########.fr       */
+/*   Updated: 2016/12/10 16:52:44 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,12 @@
 
 void	ft_arr_putstr(char **str)
 {
-	int i;
-
-	i = 0;
-	if (str[i])
+	if (str)
 	{
-		while (str[i])
+		while (*str != '\0')
 		{
-			ft_putendl(str[i]);
-			i++;
+			ft_putendl(*str);
+			str++;
 		}
 	}
 }

@@ -1,27 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: okres <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: arepnovs <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/01/13 13:22:14 by okres             #+#    #+#             */
-/*   Updated: 2017/03/15 20:48:48 by okres            ###   ########.fr       */
+/*   Created: 2016/12/05 13:09:42 by arepnovs          #+#    #+#             */
+/*   Updated: 2016/12/07 15:11:45 by arepnovs         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#include "libft.h"
 
-# define BUFF_SIZE 1
-# include "libft.h"
-
-typedef	struct		s_gnl
+size_t	ft_strnlen(const char *s, size_t maxlen)
 {
-	struct s_gnl	*next;
-	char			*buff;
-	int				fd;
-}					t_gnl;
+	size_t i;
 
-int					get_next_line(const int fd, char **line);
-#endif
+	i = 0;
+	while (s[i] != '\0' && i < maxlen)
+		i++;
+	return (i);
+}

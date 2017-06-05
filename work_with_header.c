@@ -30,36 +30,6 @@ int 	check_if_comand_is(char *command, int *cur_com_size, unsigned int *prog_s )
     return (MAX_INT);
 }
 
-int 			if_lable(int *ar)
-{
-    int i;
-
-    i = 0;
-    while (i < 3)
-    {
-        if (ar[i] > 0)
-            return (1);
-        i++;
-    }
-    return (0);
-}
-
-int 			get_index(int *ar)
-{
-	int i;
-	int j;
-
-	i = 0;
-	j = 0;
-	while (i < 3)
-	{
-		if (ar[i] == 1)
-			j = i;
-		i++;
-	}
-	return (j);
-}
-
 unsigned int	do_big_endian(unsigned int magic, int size)
 {
 	unsigned int	res;
@@ -94,62 +64,43 @@ void			fill_name_and_comment(t_asm *head)
 	}
 }
 
-int 			find_lable(t_asm *begin, char *lable)
+void 			modify_size(t_asm *head, t_asm *begin, int cur_size)
 {
-	t_asm	*node;
-	int		res;
+	int i;
 
-	node = begin;
-	res = 0;
-	while (node)
+	i = 0;
+	while (i < 3)
 	{
-		if (node->lable && ft_strcmp(node->lable, lable) == 0)
-		{
-			res = node->what_args[0] + node->what_args[1] + node->what_args[2];
-			break ;
-		}
-		node = node->next;
+		if (begin->what_args[i] == T_DIR)
+			head->header->prog_size += cur_size;
+		else
+			head->header->prog_size += begin->what_args[i];
+		i++;
 	}
-	/*if (node && (node->l_flag[0] == 1 || node->l_flag[1] == 1 ||
-		node->l_flag[2] == 1))
-		res += find_lable(begin, begin->args[get_index(begin->l_flag)]);*/ // проблема с записью лейбы, Антон фикс
-	return (res);
+
 }
 
+void			get_prog_size(t_asm *head) {
+	t_asm *begin;
+	int cur_com_size;
+	int i;
 
-void			get_prog_size(t_asm *head)
-{
-	t_asm			*begin;
-	unsigned int 	res;
-    int             cur_com_size;
-
-	res = 0;
 	begin = head;
-    cur_com_size = 4;
+	cur_com_size = 4;
+	head->header->prog_size = 0;
+	i = 0;
 	while (begin)
 	{
-        if (*(begin->lable) != '\0')
-            begin->program_s = head->header->prog_size;
-        check_if_comand_is(begin->command, &cur_com_size, &(begin->header->prog_size));
-		begin->header->prog_size += begin->what_args[0] + begin->what_args[1] + begin->what_args[2];
-		if (if_lable(head->l_flag))
+		if (*(begin->lable) != '\0')
+			begin->program_s = head->header->prog_size;
+		if (begin->command)
 		{
-			res += find_lable(head, begin->args[get_index(begin->l_flag)]);
+			check_if_comand_is(begin->command, &cur_com_size, &(head->header->prog_size));
+			modify_size(head, begin, cur_com_size);
 		}
 		begin = begin->next;
+		if (begin && begin->next == NULL)
+			break ;
 	}
-	head->header->prog_size = do_big_endian(res, 4);
-}
-
-void			header_parse(t_asm *head, int fd)
-{
-	t_asm *begin;
-
-	begin = head;
-	head->header->magic = do_big_endian(COREWAR_EXEC_MAGIC, 4);
-	ft_bzero(head->header->prog_name, PROG_NAME_LENGTH + 1);
-	ft_bzero(head->header->comment, COMMENT_LENGTH + 1);
-	fill_name_and_comment(head);
-	get_prog_size(head);
-
+	head->header->prog_size = do_big_endian(head->header->prog_size, 4);
 }
